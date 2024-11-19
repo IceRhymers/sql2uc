@@ -1,7 +1,16 @@
 # Simple Makefile for a Go project
 
+UC_TAG := v0.2.0
+
 # Build the application
-all: build test
+all: submodules generate build test
+
+submodules:
+	@git submodule update --init --recursive
+	@git -C submodules/unity_catalog checkout $(UC_TAG)
+
+clean-submodules:
+	@rm -rf submodules/unity_catalog
 
 build:
 	@echo "Building..."
@@ -19,7 +28,7 @@ test:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
-	@rm -f main 
+	@rm -f main
 
 # Generate golang code for unity catalog client
 generate:
@@ -48,4 +57,4 @@ watch:
 			fi; \
 		fi
 
-.PHONY: all build run test clean generate watch
+.PHONY: all submodules build run test clean generate watch
