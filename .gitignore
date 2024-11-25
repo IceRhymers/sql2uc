@@ -34,3 +34,6 @@ main
 
 # Unity Catalog
 submodules/unitycatalog/
+
+# Jar Binaries
+bin/*.jar
