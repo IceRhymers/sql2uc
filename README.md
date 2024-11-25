@@ -18,5 +18,5 @@ podman machine set --rootful
 
 Then you need to tell ryuk to be privileged.
 ```shell
-echo "ryuk.container.privileged = true" > ~/.testcontainers.properties
+echo "ryuk.container.privileged = true" >> ~/.testcontainers.properties
 ```
