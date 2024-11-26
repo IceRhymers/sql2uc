@@ -4,6 +4,10 @@
 UC_VERSION := 0.2.0
 UC_TAG := v$(UC_VERSION)
 
+# Version of ANTLR used to generate Go code
+ANTLR_URL := https://www.antlr.org/download/antlr-4.13.2-complete.jar
+ANTLR_JAR := bin/antlr.jar
+
 # Determine if we need platform flag (for ARM-based systems)
 # Unity Catalog's docker container does not currently build for ARM systems.
 ARCH := $(shell uname -m)
@@ -22,6 +26,34 @@ submodules:
 
 clean-submodules:
 	@rm -rf submodules/unity_catalog
+
+# Download ANTLR jar
+antlr-download:
+	@echo "Downloading ANTLR jar..."
+	@if command -v curl > /dev/null; then \
+		curl -L -o $(ANTLR_JAR) $(ANTLR_URL); \
+	elif command -v wget > /dev/null; then \
+		wget -O $(ANTLR_JAR) $(ANTLR_URL); \
+	else \
+		echo "Error: Neither curl nor wget is installed."; \
+		exit 1; \
+	fi
+	@echo "ANTLR jar downloaded to $(ANTLR_JAR)"
+
+# Generate ANTLR lexer and parser
+antlr:
+	@java -jar $(ANTLR_JAR) -Dlanguage=Go internal/parser/antlr/SqlBaseLexer.g4
+	@java -jar $(ANTLR_JAR) -Dlanguage=Go internal/parser/antlr/SqlBaseParser.g4
+
+# Clean ANTLR files
+antlr-clean:
+	@rm -f internal/parser/antlr/sqlbase_lexer.go
+	@rm -f internal/parser/antlr/sqlbase_parser.go
+	@rm -f internal/parser/antlr/sqlbaseparser_*.go
+	@rm -f internal/parser/antlr/SqlBaseLexer.interp
+	@rm -f internal/parser/antlr/SqlBaseLexer.tokens
+	@rm -f internal/parser/antlr/SqlBaseParser.interp
+	@rm -f internal/parser/antlr/SqlBaseParser.tokens
 
 build:
 	@echo "Building..."
@@ -55,4 +87,4 @@ uc-docker:
 run-uc:
 	@docker run -p 8080:8080 unitycatalog/$(UC_VERSION)
 
-.PHONY: all submodules build run test clean generate uc-docker run-uc
+.PHONY: all submodules antlr-download antlr antlr-clean build run test clean generate uc-docker run-uc

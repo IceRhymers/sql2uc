@@ -37,3 +37,7 @@ submodules/unitycatalog/
 
 # Jar Binaries
 bin/*.jar
+
+# Antlr generated files
+internal/parser/antlr/*.tokens
+internal/parser/antlr/*.interp
