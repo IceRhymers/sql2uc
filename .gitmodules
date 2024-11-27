@@ -1,0 +1,3 @@
+[submodule "submodules/unity_catalog"]
+	path = submodules/unity_catalog
+	url = https://github.com/unitycatalog/unitycatalog.git
